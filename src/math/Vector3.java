@@ -25,28 +25,28 @@ public class Vector3 {
 	}
 	
 	public static Vector3 div(Vector3 v1, Vector3 v2) {
-		return new Vector3(v1.x * v2.x, v1.y * v2.y, v1.z * v2.z);
+		return new Vector3(v1.x / v2.x, v1.y / v2.y, v1.z / v2.z);
 	}
 	
 	public void add(Vector3 v) {
 		x+=v.x;
-		x+=v.y;
-		x+=v.z;
+		y+=v.y;
+		z+=v.z;
 	}
 	public void sub(Vector3 v) {
 		x-=v.x;
-		x-=v.y;
-		x-=v.z;
+		y-=v.y;
+		z-=v.z;
 	}
 	public void mult(Vector3 v) {
 		x*=v.x;
-		x*=v.y;
-		x*=v.z;
+		y*=v.y;
+		z*=v.z;
 	}
 	public void div(Vector3 v) {
 		x/=v.x;
-		x/=v.y;
-		x/=v.z;
+		y/=v.y;
+		z/=v.z;
 	}
 	
 	

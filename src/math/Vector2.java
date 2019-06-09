@@ -23,26 +23,26 @@ public class Vector2 {
 	}
 
 	public static Vector2 div(Vector2 v1, Vector2 v2) {
-		return new Vector2(v1.x * v2.x, v1.y * v2.y);
+		return new Vector2(v1.x / v2.x, v1.y / v2.y);
 	}
 
 	public void add(Vector2 v) {
 		x += v.x;
-		x += v.y;
+		y += v.y;
 	}
 
 	public void sub(Vector2 v) {
 		x -= v.x;
-		x -= v.y;
+		y -= v.y;
 	}
 
 	public void mult(Vector2 v) {
 		x *= v.x;
-		x *= v.y;
+		y *= v.y;
 	}
 
 	public void div(Vector2 v) {
 		x /= v.x;
-		x /= v.y;
+		y /= v.y;
 	}
 }
