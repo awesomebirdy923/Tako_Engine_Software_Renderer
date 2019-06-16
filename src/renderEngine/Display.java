@@ -37,6 +37,88 @@ public class Display {
 		frame.setResizable(false);
 	}
 	
+	public void renderFlatTopTriangle(Vector2 t1, Vector2 t2, Vector2 b, Vector4 color) {
+		Vector2 v1 = new Vector2((t1.x + 1f)*0.5f*display.getWidth(), (t1.y + 1f)*0.5f*display.getHeight());
+		Vector2 v2 = new Vector2((t2.x + 1f)*0.5f*display.getWidth(), (t2.y + 1f)*0.5f*display.getHeight());
+		Vector2 v3 = new Vector2((b.x + 1f)*0.5f*display.getWidth(), (b.y + 1f)*0.5f*display.getHeight());
+		int rise = (int) (v1.y - v3.y);
+		int run1 = (int) (v1.x - v3.x);
+		int run2 = (int) (v2.x - v3.x);
+		int[] startXs = new int[rise];
+		int[] endXs = new int[rise];
+		if(run1 != 0) {
+			float m = (float)rise / (float)run1;
+			float yIntercept = v3.y - (m * v3.x);
+			for (int i = 0; i < rise; i++) {
+				startXs[i] = (int) (((float)((v3.y+i)/m) - (yIntercept/m))); 
+			}
+		} else {
+			for (int i = 0; i < rise; i++) {
+				startXs[i] = (int) v3.x;
+			}
+		}
+		if(run2 != 0) {
+			float m = (float)rise / (float)run2;
+			float yIntercept = v3.y - (m * v3.x);
+			for (int i = 0; i < rise; i++) {
+				endXs[i] = (int) (((float)((v3.y+i)/m) - (yIntercept/m))); 
+			}
+		} else {
+			for (int i = 0; i < rise; i++) {
+				endXs[i] = (int) v3.x;
+			}
+		}
+		System.out.println(startXs[0]);
+		System.out.println(endXs[0]);
+		int ctr = 0;
+		for (int y = (int) v3.y; y < v2.y; y++) {
+			for (int x = startXs[ctr]; x < endXs[ctr]; x++) {
+				renderPixel(x, y, color);
+			}
+			ctr++;
+		}
+	}
+	
+	public void renderFlatBottomTriangle(Vector2 b1, Vector2 b2, Vector2 t, Vector4 color) {
+		Vector2 v1 = new Vector2((b1.x + 1f)*0.5f*display.getWidth(), (b1.y + 1f)*0.5f*display.getHeight());
+		Vector2 v2 = new Vector2((b2.x + 1f)*0.5f*display.getWidth(), (b2.y + 1f)*0.5f*display.getHeight());
+		Vector2 v3 = new Vector2((t.x + 1f)*0.5f*display.getWidth(), (t.y + 1f)*0.5f*display.getHeight());
+		int rise = (int) (v3.y - v1.y);
+		int run1 = (int) (v3.x - v1.x);
+		int run2 = (int) (v3.x - v2.x);
+		int[] startXs = new int[rise];
+		int[] endXs = new int[rise];
+		if(run1 != 0) {
+			float m = (float)rise / (float)run1;
+			float yIntercept = v3.y - (m * v3.x);
+			for (int i = 0; i < rise; i++) {
+				startXs[i] = (int) (((float)((v1.y+i)/m) - (yIntercept/m))); 
+			}
+		} else {
+			for (int i = 0; i < rise; i++) {
+				startXs[i] = (int) v3.x;
+			}
+		}
+		if(run2 != 0) {
+			float m = (float)rise / (float)run2;
+			float yIntercept = v3.y - (m * v3.x);
+			for (int i = 0; i < rise; i++) {
+				endXs[i] = (int) (((float)((v1.y+i)/m) - (yIntercept/m))); 
+			}
+		} else {
+			for (int i = 0; i < rise; i++) {
+				endXs[i] = (int) v3.x;
+			}
+		}
+		int ctr = 0;
+		for (int y = (int) v2.y; y < (int) v3.y; y++) {
+			for (int x = startXs[ctr]; x < endXs[ctr]; x++) {
+				renderPixel(x, y, color);
+			}
+			ctr++;
+		}
+	}
+	
 	public void renderLine(Vector2 start, Vector2 end, Vector4 color1) {
 		int startX = (int) (((start.x+1.0f)*0.5f) * frame.getWidth());
 		int startY = (int) (((start.y+1.0f)*0.5f) * frame.getHeight());
@@ -87,6 +169,7 @@ public class Display {
 	}
 	
 	public void renderPixel(int x, int y, Vector4 color) {
+		y = display.getHeight() - y;
 		int rows = frame.getWidth() * BYTES_PER_PIXEL;
 		int pixelIndex =  (int) ((rows * y) + (x * BYTES_PER_PIXEL));
 		if(pixelIndex>=backBuffer.length || pixelIndex < 0) {
