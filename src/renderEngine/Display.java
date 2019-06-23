@@ -3,6 +3,7 @@ package renderEngine;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.util.Vector;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -37,10 +38,73 @@ public class Display {
 		frame.setResizable(false);
 	}
 	
+	public void renderTriangle(Vector2 v1, Vector2 v2, Vector2 v3, Vector4 color) {
+		v1 = new Vector2((v1.x + 1f)*0.5f*display.getWidth(), (v1.y + 1f)*0.5f*display.getHeight());
+		v2 = new Vector2((v2.x + 1f)*0.5f*display.getWidth(), (v2.y + 1f)*0.5f*display.getHeight());
+		v3 = new Vector2((v3.x + 1f)*0.5f*display.getWidth(), (v3.y + 1f)*0.5f*display.getHeight());
+		Vector2 least;
+		Vector2 secondGreatest;
+		Vector2 greatest;
+		if(v1.y < v2.y && v1.y < v3.y) {
+			least = v1;
+			if(v2.y < v3.y) {
+				secondGreatest = v2;
+				greatest = v3;
+			}else {
+				secondGreatest = v3;
+				greatest = v2;
+			}
+		} else if(v2.y < v3.y) {
+			least = v2;
+			if(v1.y < v3.y) {
+				secondGreatest = v1;
+				greatest = v3;
+			} else {
+				secondGreatest = v3;
+				greatest = v1;
+			}
+		} else {
+			least = v3;
+			if(v1.y < v2.y) {
+				secondGreatest = v1;
+				greatest = v2;
+			} else {
+				secondGreatest = v2;
+				greatest = v1;
+			}
+		}
+		if(least.y == secondGreatest.y) {
+			if(secondGreatest.x < least.x) {
+				renderFlatBottomTriangle(secondGreatest, least, greatest, color);
+			} else {
+				renderFlatBottomTriangle(least, secondGreatest, greatest, color);
+			}
+			return;
+		} else if(greatest.y == secondGreatest.y) {
+			if(secondGreatest.x < greatest.x) {
+				renderFlatTopTriangle(secondGreatest, greatest, least, color);
+			} else {
+				renderFlatTopTriangle(greatest, secondGreatest, least, color);
+			}
+			return;
+		}
+		Vector2 fourthVertex;
+		int rise = (int) (greatest.y-least.y);
+		int run = (int) (greatest.x-least.x);
+		float m = (float)rise / (float)run;
+		float b = (float) ((greatest.y)-(m*greatest.x));
+		float x = (float) ((secondGreatest.y/m) - (b/m));
+		float y = m*x+b;
+		fourthVertex = new Vector2(x,y);
+		System.out.println(rise + " " + run);
+		renderFlatTopTriangle(secondGreatest, fourthVertex, least, color);
+		renderFlatBottomTriangle(secondGreatest, fourthVertex, greatest, color);
+	}
+	
 	public void renderFlatTopTriangle(Vector2 t1, Vector2 t2, Vector2 b, Vector4 color) {
-		Vector2 v1 = new Vector2((t1.x + 1f)*0.5f*display.getWidth(), (t1.y + 1f)*0.5f*display.getHeight());
-		Vector2 v2 = new Vector2((t2.x + 1f)*0.5f*display.getWidth(), (t2.y + 1f)*0.5f*display.getHeight());
-		Vector2 v3 = new Vector2((b.x + 1f)*0.5f*display.getWidth(), (b.y + 1f)*0.5f*display.getHeight());
+		Vector2 v1 = t1;
+		Vector2 v2 = t2;
+		Vector2 v3 = b;
 		int rise = (int) (v1.y - v3.y);
 		int run1 = (int) (v1.x - v3.x);
 		int run2 = (int) (v2.x - v3.x);
@@ -80,14 +144,18 @@ public class Display {
 	}
 	
 	public void renderFlatBottomTriangle(Vector2 b1, Vector2 b2, Vector2 t, Vector4 color) {
-		Vector2 v1 = new Vector2((b1.x + 1f)*0.5f*display.getWidth(), (b1.y + 1f)*0.5f*display.getHeight());
-		Vector2 v2 = new Vector2((b2.x + 1f)*0.5f*display.getWidth(), (b2.y + 1f)*0.5f*display.getHeight());
-		Vector2 v3 = new Vector2((t.x + 1f)*0.5f*display.getWidth(), (t.y + 1f)*0.5f*display.getHeight());
+		Vector2 v1 = b1;
+		Vector2 v2 = b2;
+		Vector2 v3 = t;
 		int rise = (int) (v3.y - v1.y);
 		int run1 = (int) (v3.x - v1.x);
 		int run2 = (int) (v3.x - v2.x);
 		int[] startXs = new int[rise];
 		int[] endXs = new int[rise];
+		float[] reds = new float[rise];
+		float[] greens = new float[rise];
+		float[] blues = new float[rise];
+		float[] alphas = new float[rise];
 		if(run1 != 0) {
 			float m = (float)rise / (float)run1;
 			float yIntercept = v3.y - (m * v3.x);
