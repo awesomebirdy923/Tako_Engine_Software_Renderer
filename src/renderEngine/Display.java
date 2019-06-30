@@ -136,8 +136,10 @@ public class Display {
 		System.out.println(endXs[0]);
 		int ctr = 0;
 		for (int y = (int) v3.y; y < v2.y; y++) {
+			if(ctr<startXs.length || ctr<endXs.length) {
 			for (int x = startXs[ctr]; x < endXs[ctr]; x++) {
 				renderPixel(x, y, color);
+			}
 			}
 			ctr++;
 		}
