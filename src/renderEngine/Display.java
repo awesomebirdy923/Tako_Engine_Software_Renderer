@@ -137,9 +137,9 @@ public class Display {
 		int ctr = 0;
 		for (int y = (int) v3.y; y < v2.y; y++) {
 			if(ctr<startXs.length || ctr<endXs.length) {
-			for (int x = startXs[ctr]; x < endXs[ctr]; x++) {
-				renderPixel(x, y, color);
-			}
+				for (int x = startXs[ctr]; x < endXs[ctr]; x++) {
+					renderPixel(x, y, color);
+				}
 			}
 			ctr++;
 		}
@@ -182,8 +182,10 @@ public class Display {
 		}
 		int ctr = 0;
 		for (int y = (int) v2.y; y < (int) v3.y; y++) {
-			for (int x = startXs[ctr]; x < endXs[ctr]; x++) {
-				renderPixel(x, y, color);
+			if(ctr<startXs.length || ctr<endXs.length) {
+				for (int x = startXs[ctr]; x < endXs[ctr]; x++) {
+					renderPixel(x, y, color);
+				}
 			}
 			ctr++;
 		}
