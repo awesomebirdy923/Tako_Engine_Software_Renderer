@@ -12,7 +12,7 @@ public class Runner {
 	public Runner() {
 		display = new Display(720, 720);
 		display.clearBackBuffer(0, 0, 0, 1);
-		display.renderTriangle(new Vector2(0.1f, 1f), new Vector2(0.6f, 1f), new Vector2(1f, 0.2f), new Vector4(255f, 0, 0, 255f));		
+		display.renderTriangle(new Vector2(-1f, 1f), new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector4(255f, 0, 0, 255f));		
 		display.swapBuffers();
 	}
 	
