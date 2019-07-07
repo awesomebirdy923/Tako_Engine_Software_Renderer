@@ -42,47 +42,41 @@ public class Display {
 		v1 = new Vector2((v1.x + 1f)*0.5f*display.getWidth(), (v1.y + 1f)*0.5f*display.getHeight());
 		v2 = new Vector2((v2.x + 1f)*0.5f*display.getWidth(), (v2.y + 1f)*0.5f*display.getHeight());
 		v3 = new Vector2((v3.x + 1f)*0.5f*display.getWidth(), (v3.y + 1f)*0.5f*display.getHeight());
-		if(v1.y == v2.y) {
-			if(v3.y > v1.y) {
-				if(v1.x < v2.x) {
-					renderFlatBottomTriangle(v3, v1, v2, color);					
-				}else {
-					renderFlatBottomTriangle(v3, v2, v1, color);
-				}
+		if(v1.y == v2.y && v3.y > v1.y && v3.y > v2.y) {
+			if(v1.x < v2.x) {
+				renderFlatBottomTriangle(v1, v2, v3, color);
 			}else {
-				if(v1.x < v2.x) {
-					renderFlatTopTriangle(v3, v1, v2, color);					
-				}else {
-					renderFlatTopTriangle(v3, v2, v1, color);					
-				}
+				renderFlatBottomTriangle(v2, v1, v3, color);
 			}
-		}else if(v2.y == v3.y) {
-			if(v1.y > v2.y) {
-				if(v2.x < v3.x) {
-					renderFlatBottomTriangle(v1, v2, v3, color);
-				}else {
-					renderFlatBottomTriangle(v1, v3, v2, color);					
-				}
+		}else if(v1.y == v2.y && v3.y < v1.y && v3.y < v2.y){
+			if(v1.x < v2.x) {
+				renderFlatTopTriangle(v1, v2, v3, color);
 			}else {
-				if(v2.x < v3.x) {
-					renderFlatTopTriangle(v1, v2, v3, color);
-				}else {
-					renderFlatTopTriangle(v1, v3, v2, color);
-				}
+				renderFlatTopTriangle(v2, v1, v3, color);
 			}
-		}else if(v1.y == v3.y){
-			if(v2.y > v1.y) {
-				if(v1.x < v3.x) {
-					renderFlatBottomTriangle(v2, v1, v3, color);
-				}else {
-					renderFlatBottomTriangle(v2, v3, v1, color);
-				}
+		}else if(v1.y == v3.y && v2.y > v1.y && v2.y > v3.y){
+			if(v1.x < v3.x) {
+				renderFlatBottomTriangle(v1, v3, v2, color);
 			}else {
-				if(v1.x < v3.x) {
-					renderFlatTopTriangle(v2, v1, v3, color);
-				}else {
-					renderFlatTopTriangle(v2, v3, v1, color);
-				}
+				renderFlatBottomTriangle(v3, v1, v2, color);
+			}
+		}else if(v1.y == v3.y && v2.y < v1.y && v2.y < v3.y){
+			if(v1.x < v3.x) {
+				renderFlatTopTriangle(v1, v3, v2, color);
+			}else {
+				renderFlatTopTriangle(v3, v1, v2, color);
+			}
+		}else if(v2.y == v3.y && v1.y > v2.y && v1.y > v3.y){
+			if(v2.y < v3.y) {
+				renderFlatBottomTriangle(v2, v3, v1, color);
+			}else {
+				renderFlatBottomTriangle(v3, v2, v1, color);
+			}
+		}else if(v2.y == v3.y && v1.y < v2.y && v1.y < v3.y){
+			if(v2.y < v3.y) {
+				renderFlatTopTriangle(v2, v3, v1, color);
+			}else {
+				renderFlatTopTriangle(v3, v2, v1, color);
 			}
 		}else {
 			Vector2 topVertex = null;
@@ -117,6 +111,7 @@ public class Display {
 					bottomVertex = v1;
 				}
 			}
+			System.out.println(topVertex.y + " " + middleVertex.y + " " + bottomVertex.y);
 			int rise = (int) (topVertex.y-bottomVertex.y);
 			int run = (int) (topVertex.x-bottomVertex.x);
 			if(run != 0) {
@@ -127,13 +122,12 @@ public class Display {
 			}else {
 			fourthVertex = new Vector2(topVertex.x, middleVertex.y);
 			}
-			System.out.println(rise + " " + run);
 			if(fourthVertex.x < middleVertex.x) {
-				renderFlatBottomTriangle(topVertex, fourthVertex, middleVertex, color);
-				renderFlatTopTriangle(bottomVertex, fourthVertex, middleVertex, color);				
+				renderFlatBottomTriangle(fourthVertex, middleVertex, topVertex, color);
+				renderFlatTopTriangle(fourthVertex, middleVertex, bottomVertex, color);				
 			}else {
-				renderFlatBottomTriangle(topVertex, middleVertex, fourthVertex, color);
-				renderFlatTopTriangle(bottomVertex, middleVertex, fourthVertex, color);	
+				renderFlatBottomTriangle(middleVertex, fourthVertex, topVertex, color);
+				renderFlatTopTriangle(middleVertex, fourthVertex, bottomVertex, color);		
 			}
 		}
 	}
