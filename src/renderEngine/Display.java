@@ -38,6 +38,25 @@ public class Display {
 		frame.setResizable(false);
 	}
 	
+	private Vector2[] getBarycentric(Vector2 v1, Vector2 v2, Vector3 v3) {
+		Vector2[] vertices = new Vector2[6];
+		Vector2 v4 = new Vector2((v1.x/2)+(v2.x/2),(v1.y/2)+(v2.y/2));
+		Vector2 v5 = new Vector2((v2.x/2)+(v3.x/2),(v2.y/2)+(v3.y/2));
+		Vector2 v6 = new Vector2((v3.x/2)+(v1.x/2),(v3.y/2)+(v1.y/2));
+		Vector2 v7 = new Vector2((v4.x/2)+(v6.x/2),(v4.y/2)+(v6.y/2));
+		Vector2 v8 = new Vector2((v4.x/2)+(v5.x/2),(v4.y/2)+(v5.y/2));
+		Vector2 v9 = new Vector2((v5.x/2)+(v6.x/2),(v5.y/2)+(v6.y/2));
+		vertices[0] = v4;
+		vertices[1] = v5;
+		vertices[2] = v6;
+		vertices[3] = v7;
+		vertices[4] = v8;
+		vertices[5] = v9;
+		return vertices;
+	}
+	
+	//TODO:(Robby) The method needs to "like" any order of the given vertices. 
+	
 	public void renderTriangle(Vector2 v1, Vector2 v2, Vector2 v3, Vector4 color) {
 		v1 = new Vector2((v1.x + 1f)*0.5f*display.getWidth(), (v1.y + 1f)*0.5f*display.getHeight());
 		v2 = new Vector2((v2.x + 1f)*0.5f*display.getWidth(), (v2.y + 1f)*0.5f*display.getHeight());
@@ -77,12 +96,17 @@ public class Display {
 				renderFlatTopTriangle(v2, v3, v1, color);
 			}else {
 				renderFlatTopTriangle(v3, v2, v1, color);
+				System.out.println("ejiwrw");
 			}
 		}else {
 			Vector2 topVertex = null;
 			Vector2 middleVertex = null;
 			Vector2 bottomVertex = null;
 			Vector2 fourthVertex = null;
+			System.out.println(topVertex);
+			System.out.println(middleVertex);
+			System.out.println(bottomVertex);
+			System.out.println(fourthVertex);
 			if(v3.y > v1.y && v3.y > v2.y) {
 				topVertex = v3;
 				if(v1.y > v2.y) {
@@ -111,7 +135,6 @@ public class Display {
 					bottomVertex = v1;
 				}
 			}
-			System.out.println(topVertex.y + " " + middleVertex.y + " " + bottomVertex.y);
 			int rise = (int) (topVertex.y-bottomVertex.y);
 			int run = (int) (topVertex.x-bottomVertex.x);
 			if(run != 0) {
@@ -131,7 +154,7 @@ public class Display {
 			}
 		}
 	}
-	
+
 	public void renderFlatTopTriangle(Vector2 t1, Vector2 t2, Vector2 b, Vector4 color) {
 		Vector2 v1 = t1;
 		Vector2 v2 = t2;
@@ -224,9 +247,6 @@ public class Display {
 		int endX = (int) (((end.x+1.0f)*0.5f) * frame.getWidth());
 		int endY = (int) (((end.y+1.0f)*0.5f) * frame.getHeight());
 		
-		Vector2 point1 = new Vector2(startX, startY);
-		Vector2 point2 = new Vector2(endX, endY);
-		
 		int rise = endY - startY;
 		int run = endX - startX;
 		
@@ -257,6 +277,64 @@ public class Display {
 				int y = startY + (i*addAmount);
 				int x = startX;
 				renderPixel(x, y, color1);
+			}
+		}
+	}
+	
+	private Vector4 calculateColor(Vector2 v1, Vector2 p, Vector2 v3, Vector4 color1, Vector4 color2) {
+		float lineLength = Vector2.lengthOfTwoVectors(v1, v3);
+		float pixelLength = Vector2.lengthOfTwoVectors(v1, p);
+		if(lineLength != 0) {
+			float ratio1 = 1.0f - (pixelLength / lineLength);
+			float ratio2 = 1.0f - ratio1;
+			return new Vector4((color1.x * ratio1) + (color2.x * ratio2), 
+					(color1.y * ratio1) + (color2.y * ratio2),
+					(color1.z * ratio1) + (color2.z * ratio2),
+					(color1.w * ratio1) + (color2.w * ratio2));
+		}else {
+			return new Vector4((color1.x + color2.x)/2,
+					(color1.y + color2.y)/2,
+					(color1.z + color2.z)/2,
+					(color1.w + color2.w)/2);
+		}
+	}
+	
+	public void renderLine(Vector2 start, Vector2 end, Vector4 color1, Vector4 color2) {
+		int startX = (int) (((start.x+1.0f)*0.5f) * frame.getWidth());
+		int startY = (int) (((start.y+1.0f)*0.5f) * frame.getHeight());
+		int endX = (int) (((end.x+1.0f)*0.5f) * frame.getWidth());
+		int endY = (int) (((end.y+1.0f)*0.5f) * frame.getHeight());
+				
+		int rise = endY - startY;
+		int run = endX - startX;
+	
+		if(run!=0) {
+			float m = (float)rise / (float)run;
+			float b = (float) (startY - (m * (float)startX));
+			int ars = Math.abs(rise);
+			int arn = Math.abs(run);
+			if(ars > arn) {
+				int addAmount = (rise > 0 ? 1 : -1);
+				for (int i = 0; i < ars; i++) {
+					int y = startY + (i*addAmount);
+					int x = (int) (((float) y / m) - (b / m));
+					renderPixel(x, y, calculateColor(new Vector2(startX,startY), new Vector2(x,y), new Vector2(endX,endY), color1, color2));
+				}
+			}else {
+				int addAmount = (rise > 0 ? 1 : -1);
+				for (int i = 0; i < arn; i++) {
+					int x = startX + (i*addAmount);
+					int y = (int) (((float) x / m) - (b / m));
+					renderPixel(x, y, calculateColor(new Vector2(startX,startY), new Vector2(x,y), new Vector2(endX,endY), color1, color2));
+				}
+			}
+		}else {
+			int ars = Math.abs(rise);
+			int addAmount = (rise > 0 ? 1 : -1);
+			for (int i = 0; i < ars; i++) {
+				int y = startY + (i*addAmount);
+				int x = startX;
+				renderPixel(x, y, calculateColor(new Vector2(startX,startY), new Vector2(x,y), new Vector2(endX,endY), color1, color2));
 			}
 		}
 	}
